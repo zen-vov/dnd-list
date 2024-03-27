@@ -6,7 +6,7 @@ import "./App.css";
 const DATA = [
   {
     id: "0e2f0db1-5457-46b0-949e-8032d2f9997a",
-    name: "item1",
+    name: "todo1",
     items: [
       { id: "26fd50b3-3841-496e-8b32-73636f6f4197", name: "3% Milk" },
       { id: "b0ee9d50-d0a6-46f8-96e3-7f3f0f9a2525", name: "Butter" },
@@ -15,7 +15,7 @@ const DATA = [
   },
   {
     id: "487f68b4-1746-438c-920e-d67b7df46247",
-    name: "item2",
+    name: "todo2",
     items: [
       {
         id: "95ee6a5d-f927-4579-8c15-2b4eb86210ae",
@@ -27,7 +27,7 @@ const DATA = [
   },
   {
     id: "25daffdc-aae0-4d73-bd31-43f73101e7c0",
-    name: "item3",
+    name: "todo3",
     items: [
       { id: "960cbbcf-89a0-4d79-aa8e-56abbc15eacc", name: "Workbench" },
       { id: "d3edf796-6449-4931-a777-ff66965a025b", name: "Hammer" },
@@ -36,8 +36,42 @@ const DATA = [
   },
 ];
 
+const TodosList = ({ name, items, id }) => {
+  return (
+    <Droppable droppableId={id}>
+      {(provided) => (
+        <div
+          className="item"
+          {...provided.droppableProps}
+          ref={provided.innerRef}
+        >
+          <div>
+            <h3>{name}</h3>
+          </div>
+          <div>
+            {items.map((item, index) => (
+              <Draggable draggableId={item.id} index={index} key={item.id}>
+                {(provided) => (
+                  <div
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    ref={provided.innerRef}
+                  >
+                    <p>{item.name}</p>
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        </div>
+      )}
+    </Droppable>
+  );
+};
+
 function App() {
-  const [items, setItems] = React.useState(DATA);
+  const [todos, settodos] = React.useState(DATA);
 
   const handleDragDrop = (results) => {
     const { source, destination, type } = results;
@@ -56,17 +90,24 @@ function App() {
     }
 
     if (type == "group") {
-      const reordereditems = [...items];
+      const reorderedTodos = [...todos];
 
       //['item1', 'item2', 'item3']
       const sourceIndex = source.index;
       const destinationIndex = destination.index;
 
-      const [removedItem] = reordereditems.splice(sourceIndex, 1);
-      reordereditems.splice(destinationIndex, 0, removedItem);
+      const [removedItem] = reorderedTodos.splice(sourceIndex, 1);
+      reorderedTodos.splice(destinationIndex, 0, removedItem);
+      console.log({ destination, source });
 
-      return setItems(reordereditems);
+      return settodos(reorderedTodos);
     }
+    console.log({ destination, source });
+
+    const todoSourceIndex = todos.findIndex(
+      (todo) => todo.id === source.droppableId
+    );
+    console.log(todos.findIndex((todo) => todo.id === source.droppableId));
   };
 
   return (
@@ -79,24 +120,21 @@ function App() {
           <Droppable droppableId="list" type="group">
             {(provided) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
-                {items.map((store, index) => (
-                  <Draggable
-                    draggableId={store.id}
-                    key={store.id}
-                    index={index}
-                  >
+                {todos.map((todo, index) => (
+                  <Draggable draggableId={todo.id} key={todo.id} index={index}>
                     {(provided) => (
                       <div
-                        className="item-container"
+                        className="todo-container"
                         {...provided.dragHandleProps}
                         {...provided.draggableProps}
                         ref={provided.innerRef}
                       >
-                        <h3>{store.name}</h3>
+                        <TodosList {...todo} />
                       </div>
                     )}
                   </Draggable>
                 ))}
+                {provided.placeholder}
               </div>
             )}
           </Droppable>

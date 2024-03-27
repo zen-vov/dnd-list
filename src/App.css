@@ -34,7 +34,6 @@ body {
 .card {
   background-color: 000;
   color: #fff;
-  min-height: 230px;
   border: 1px solid #fff;
   padding: 20px;
   border-radius: 5px;
@@ -47,11 +46,19 @@ body {
   text-align: center;
 }
 
-.item-container {
+.todo-container {
   text-align: center;
   padding: 5px;
   margin: 10px 0;
   border-bottom: 1px solid gray;
+}
+
+.item h3 {
+  margin-bottom: 10px;
+}
+.item p {
+  color: gray;
+  margin: 5px 0px;
 }
 
 .items-container {
