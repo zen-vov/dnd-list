@@ -6,31 +6,31 @@ import "./App.css";
 const DATA = [
   {
     id: "0e2f0db1-5457-46b0-949e-8032d2f9997a",
-    name: "todo1",
+    name: "todo 1",
     items: [
-      { id: "26fd50b3-3841-496e-8b32-73636f6f4197", name: "3% Milk" },
-      { id: "b0ee9d50-d0a6-46f8-96e3-7f3f0f9a2525", name: "Butter" },
+      { id: "26fd50b3-3841-496e-8b32-73636f6f4197", name: "task 1" },
+      { id: "b0ee9d50-d0a6-46f8-96e3-7f3f0f9a2525", name: "task 2" },
     ],
     tint: 1,
   },
   {
     id: "487f68b4-1746-438c-920e-d67b7df46247",
-    name: "todo2",
+    name: "todo 2",
     items: [
       {
         id: "95ee6a5d-f927-4579-8c15-2b4eb86210ae",
-        name: "Designing Data Intensive Applications",
+        name: "task 3",
       },
-      { id: "5bee94eb-6bde-4411-b438-1c37fa6af364", name: "Atomic Habits" },
+      { id: "5bee94eb-6bde-4411-b438-1c37fa6af364", name: "task 4" },
     ],
     tint: 2,
   },
   {
     id: "25daffdc-aae0-4d73-bd31-43f73101e7c0",
-    name: "todo3",
+    name: "todo 3",
     items: [
-      { id: "960cbbcf-89a0-4d79-aa8e-56abbc15eacc", name: "Workbench" },
-      { id: "d3edf796-6449-4931-a777-ff66965a025b", name: "Hammer" },
+      { id: "960cbbcf-89a0-4d79-aa8e-56abbc15eacc", name: "task 5" },
+      { id: "d3edf796-6449-4931-a777-ff66965a025b", name: "task 6" },
     ],
     tint: 3,
   },
@@ -71,7 +71,7 @@ const TodosList = ({ name, items, id }) => {
 };
 
 function App() {
-  const [todos, settodos] = React.useState(DATA);
+  const [todos, setTodos] = React.useState(DATA);
 
   const handleDragDrop = (results) => {
     const { source, destination, type } = results;
@@ -89,25 +89,49 @@ function App() {
       return;
     }
 
-    if (type == "group") {
+    if (type === "group") {
       const reorderedTodos = [...todos];
 
-      //['item1', 'item2', 'item3']
-      const sourceIndex = source.index;
-      const destinationIndex = destination.index;
+      const todoSourceIndex = source.index;
+      const todoDestinationIndex = destination.index;
 
-      const [removedItem] = reorderedTodos.splice(sourceIndex, 1);
-      reorderedTodos.splice(destinationIndex, 0, removedItem);
-      console.log({ destination, source });
+      const [removedTodo] = reorderedTodos.splice(todoSourceIndex, 1);
+      reorderedTodos.splice(todoDestinationIndex, 0, removedTodo);
 
-      return settodos(reorderedTodos);
+      return setTodos(reorderedTodos);
     }
-    console.log({ destination, source });
+
+    const itemSourceIndex = source.index;
+    const itemDestinationIndex = source.index;
 
     const todoSourceIndex = todos.findIndex(
       (todo) => todo.id === source.droppableId
     );
-    console.log(todos.findIndex((todo) => todo.id === source.droppableId));
+    const todoDestionationIndex = todos.findIndex(
+      (todo) => todo.id === destination.droppableId
+    );
+
+    const newSourceItems = [...todos[todoSourceIndex].items];
+    const newDestinationItems =
+      source.droppableId !== destination.droppableId
+        ? [...todos[todoDestionationIndex].items]
+        : newSourceItems;
+
+    const [deletedItem] = newSourceItems.splice(itemSourceIndex, 1);
+    newDestinationItems.splice(itemDestinationIndex, 0, deletedItem);
+
+    const newTodos = [...todos];
+
+    newTodos[todoSourceIndex] = {
+      ...todos[todoSourceIndex],
+      items: newSourceItems,
+    };
+    newTodos[todoDestionationIndex] = {
+      ...todos[todoDestionationIndex],
+      items: newDestinationItems,
+    };
+
+    setTodos(newTodos);
   };
 
   return (
